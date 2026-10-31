@@ -1,6 +1,8 @@
 import platform
 import subprocess
+import ipaddress
 
+from ai.firewall.firewall_policy import source_ip_protection
 
 RULE_PREFIX = "SentinelAI-Block"
 
@@ -17,10 +19,16 @@ def block_ip(source_ip):
             "message": "Real firewall enforcement currently supports Windows only."
         }
 
-    if not source_ip:
+    protected, protection_reason = source_ip_protection(source_ip)
+    if protected:
         return {
             "status": "FAILED",
-            "message": "No source IP provided."
+            "message": protection_reason
+        }
+    if ":" in str(source_ip):
+        return {
+            "status": "FAILED",
+            "message": "This Windows Firewall rule currently supports IPv4 sources only."
         }
 
     rule_name = f"{RULE_PREFIX}-{source_ip}"
@@ -76,10 +84,17 @@ def remove_block(source_ip):
             "message": "Real firewall enforcement currently supports Windows only."
         }
 
-    if not source_ip:
+    try:
+        parsed_ip = ipaddress.ip_address(str(source_ip).strip())
+    except (ValueError, TypeError):
         return {
             "status": "FAILED",
-            "message": "No source IP provided."
+            "message": "A valid source IP is required to remove a firewall rule."
+        }
+    if parsed_ip.version != 4:
+        return {
+            "status": "FAILED",
+            "message": "This Windows Firewall rule currently supports IPv4 sources only."
         }
 
     rule_name = f"{RULE_PREFIX}-{source_ip}"

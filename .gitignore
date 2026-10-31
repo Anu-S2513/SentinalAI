@@ -29,6 +29,11 @@ Thumbs.db
 
 # CSV generated logs
 ai/logs/predictions.csv
+ai/logs/alert_feedback.csv
+ai/logs/recovery_settings.json
+ai/logs/session_state.json
+ai/logs/active_flows.json
+ai/logs/capture_state.json
+data/prediction_logs.csv
 # ML datasets
 ai/dataset/
-ai/logs/active_flows.json

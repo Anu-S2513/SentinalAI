@@ -580,13 +580,22 @@ def save_active_flows(file_path):
     FastAPI reads this file to display
     behavioral network activity.
 
-    Uses a temporary file and retries the
-    replacement because Windows may temporarily
-    deny access while another process is reading
-    the active flow file.
+    Updates the existing snapshot in place and preserves the session marker.
     """
 
     active_flows = get_active_flows()
+    session_started_at = None
+
+    if os.path.isfile(file_path):
+        try:
+            with open(file_path, "r", encoding="utf-8") as existing_file:
+                previous_snapshot = json.load(existing_file)
+            if isinstance(previous_snapshot, dict):
+                session_started_at = previous_snapshot.get(
+                    "session_started_at"
+                )
+        except (OSError, json.JSONDecodeError):
+            pass
 
     # -----------------------------------------------------
     # Create directory
@@ -603,62 +612,12 @@ def save_active_flows(file_path):
             exist_ok=True
         )
 
-    # -----------------------------------------------------
-    # Temporary file
-    # -----------------------------------------------------
+    snapshot = {
+        "total_flows": len(active_flows),
+        "flows": active_flows
+    }
+    if session_started_at:
+        snapshot["session_started_at"] = session_started_at
 
-    temporary_file = (
-        file_path + ".tmp"
-    )
-
-    # -----------------------------------------------------
-    # Write JSON
-    # -----------------------------------------------------
-
-    with open(
-        temporary_file,
-        "w",
-        encoding="utf-8"
-    ) as file:
-
-        json.dump(
-            {
-                "total_flows":
-                    len(active_flows),
-
-                "flows":
-                    active_flows
-            },
-            file,
-            indent=2
-        )
-
-    # -----------------------------------------------------
-    # Replace old file with retry
-    # -----------------------------------------------------
-
-    max_attempts = 5
-
-    for attempt in range(
-        max_attempts
-    ):
-
-        try:
-
-            os.replace(
-                temporary_file,
-                file_path
-            )
-
-            return
-
-        except PermissionError:
-
-            # If this was the final attempt,
-            # let the error propagate.
-            if attempt == max_attempts - 1:
-
-                raise
-
-            # Wait briefly and retry.
-            time.sleep(0.05)
+    with open(file_path, "w", encoding="utf-8") as file:
+        json.dump(snapshot, file, indent=2)

@@ -1,562 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="theme-color" content="#081321">
     <title>SentinelAI | Network Security</title>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/dashboard-assets/style.css?v=20261031-explanation-details">
 </head>
-
 <body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <a class="brand" href="#overview" data-view-link="overview" aria-label="SentinelAI home">
+            <span class="brand-mark" aria-hidden="true">S</span>
+            <span class="brand-copy"><strong>Sentinel<span>AI</span></strong><small>NETWORK SECURITY</small></span>
+        </a>
+        <p class="nav-caption">MONITORING</p>
+        <nav class="nav" aria-label="Main navigation">
+            <a class="nav-item active" href="#overview" data-view-link="overview" aria-current="page"><span class="nav-icon">⌂</span><span>Overview</span></a>
+            <a class="nav-item" href="#explainability" data-view-link="explainability"><span class="nav-icon">✦</span><span>Explainable AI</span></a>
+            <a class="nav-item" href="#analytics" data-view-link="analytics"><span class="nav-icon">▥</span><span>Analytics</span></a>
+            <a class="nav-item" href="#model-quality" data-view-link="model-quality"><span class="nav-icon">◫</span><span>Model quality</span></a>
+            <a class="nav-item" href="#activity" data-view-link="activity"><span class="nav-icon">⇄</span><span>Live traffic</span></a>
+            <a class="nav-item" href="#alerts" data-view-link="alerts"><span class="nav-icon">♧</span><span>Alerts</span><span class="alert-count" id="navAlertCount">0</span></a>
+            <a class="nav-item" href="#adaptation" data-view-link="adaptation"><span class="nav-icon">⟳</span><span>Self-healing</span></a>
+            <a class="nav-item" href="#protection" data-view-link="protection"><span class="nav-icon">⚙</span><span>Protection</span></a>
+        </nav>
+        <div class="sidebar-bottom"><span class="side-shield">◈</span><strong>Protection monitor</strong><span>Live network view</span><i></i></div>
+    </aside>
 
-    <div class="app">
+    <main class="main">
+        <header class="page-header">
+            <div class="page-title"><p class="breadcrumb"><span>SentinelAI</span><b>/</b><span id="breadcrumbCurrent">Overview</span></p><h1 id="pageTitle">Network overview</h1><p class="page-subtitle" id="pageSubtitle">Your current traffic and protection status, all in one place.</p></div>
+            <div class="status-strip" aria-label="System status">
+                <div class="status-chip api-status-chip"><span class="status-light"></span><span><small>Dashboard</small><strong id="apiStatus">Connecting</strong></span></div>
+                <div class="status-chip capture-status-chip"><span class="status-light"></span><span><small>Traffic capture</small><strong id="captureTopStatus">Checking</strong></span></div>
+                <div class="status-chip data-status-chip" id="dataFreshness"><span class="status-light"></span><span><small>Last update</small><strong id="dataFreshnessLabel">Waiting</strong></span></div>
+                <div class="status-chip refresh-chip"><span class="refresh-icon">↻</span><span><small>Refresh</small><strong>Every 5 sec</strong></span></div>
+            </div>
+        </header>
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+        <section class="page-view active-view" id="view-overview" data-view="overview" aria-labelledby="overviewHeading">
+            <div class="view-heading"><div><span class="section-index">01</span><div><h2 id="overviewHeading">Session overview</h2><p>Key activity from this monitoring session</p></div></div><span class="quiet-note">Current monitoring session</span></div>
+            <div class="kpi-grid">
+                <article class="kpi-card blue"><div class="kpi-heading"><span class="kpi-icon">◈</span><span>Traffic checks</span></div><strong id="totalPredictions">--</strong><small>Reviewed this session</small><i></i></article>
+                <article class="kpi-card red"><div class="kpi-heading"><span class="kpi-icon">!</span><span>Possible threats</span></div><strong id="attackPredictions">--</strong><small>Flagged for attention</small><i></i></article>
+                <article class="kpi-card amber"><div class="kpi-heading"><span class="kpi-icon">◉</span><span>Being watched</span></div><strong id="monitoredCount">--</strong><small>Traffic checks and quiet-period observations</small><i></i></article>
+                <article class="kpi-card rose"><div class="kpi-heading"><span class="kpi-icon">⛨</span><span>Active blocks</span></div><strong id="activeBlocks">--</strong><small>Blocks still in place</small><i></i></article>
+            </div>
+            <details class="session-details"><summary><span>More session results</span><span class="summary-hint">Additional counts and outcomes</span></summary><div class="secondary-metrics">
+                <div><span>Normal traffic</span><strong id="normalPredictions">--</strong></div><div><span>Allowed</span><strong id="allowedCount">--</strong></div><div><span>Block attempts</span><strong id="blockAttempts">--</strong></div><div><span>Recovered blocks</span><strong id="recoveredBlocks">--</strong></div><div><span>Recovery errors</span><strong id="recoveryFailures">--</strong></div><div><span>Average threat estimate</span><strong id="averageRisk">--</strong></div>
+            </div></details>
+            <article class="overview-alert-card panel" aria-live="polite">
+                <div class="overview-alert-heading"><div><span class="overview-alert-icon">!</span><div><h3 id="overviewAlertTitle">Latest threat and firewall result</h3><p id="overviewAlertTime">No threat alert recorded this session</p></div></div><span class="overview-alert-tag" id="overviewAlertTag">No alerts</span></div>
+                <div class="overview-alert-content" id="overviewAlertContent"><p class="overview-no-alert">When an attack is detected, its prediction and firewall result will appear here.</p></div>
+                <a class="overview-alert-link" href="#alerts" data-view-link="alerts">Open alert history <span>→</span></a>
+            </article>
+            <div class="overview-shortcuts">
+                <a class="shortcut-card" href="#explainability" data-view-link="explainability"><span class="shortcut-icon cyan">✦</span><span><strong>Understand a decision</strong><small>See what traffic detail influenced the AI result</small></span><b>→</b></a>
+                <a class="shortcut-card" href="#activity" data-view-link="activity"><span class="shortcut-icon blue">⇄</span><span><strong>Review live connections</strong><small>Search the connections packet capture has seen</small></span><b>→</b></a>
+                <a class="shortcut-card" href="#alerts" data-view-link="alerts"><span class="shortcut-icon red">♧</span><span><strong>Check recent alerts</strong><small>Review possible threats and enforcement results</small></span><b>→</b></a>
+                <a class="shortcut-card" href="#analytics" data-view-link="analytics"><span class="shortcut-icon purple">▥</span><span><strong>Explore traffic trends</strong><small>View session classification and risk over time</small></span><b>→</b></a>
+            </div>
+        </section>
 
-            <div class="brand">
-                <div class="brand-icon">🛡</div>
+        <section class="page-view" id="view-explainability" data-view="explainability" aria-labelledby="explainHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">02</span><div><h2 id="explainHeading">Explainable AI</h2><p>A plain-language account of the latest traffic decision</p></div></div><span class="latest-alert-tag" id="latestAlertTag">Waiting for traffic</span></div>
+            <article class="decision-card panel"><div id="explainabilityContent"><div class="explainability-empty">Waiting for a traffic decision...</div></div></article>
+            <div class="help-note"><span>i</span><p>Prediction describes what the model detected. Firewall action describes the chosen response. Enforcement shows whether the firewall actually applied it.</p></div>
+        </section>
 
-                <div>
-                    <h2>Sentinel<span>AI</span></h2>
-                    <p>Network Security</p>
+        <section class="page-view" id="view-analytics" data-view="analytics" aria-labelledby="analyticsHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">03</span><div><h2 id="analyticsHeading">Traffic analytics</h2><p>Session patterns from traffic checks</p></div></div></div>
+            <div class="analytics-grid">
+                <article class="panel insight-panel"><div class="panel-header"><div><h3>Traffic classification</h3><p>Normal traffic compared with possible threats</p></div></div><div class="donut-layout"><div class="donut" id="trafficDonut"><div class="donut-center"><strong id="donutTotal">0</strong><span>Checks</span></div></div><div class="legend"><div class="legend-item"><span class="legend-dot normal-dot"></span><div><strong>Normal</strong><span id="normalPercent">0%</span></div></div><div class="legend-item"><span class="legend-dot attack-dot"></span><div><strong>Possible threat</strong><span id="attackPercent">0%</span></div></div></div></div></article>
+                <article class="panel insight-panel risk-panel"><div class="panel-header"><div><h3>Threat estimate timeline</h3><p>Model estimate for recent traffic checks</p></div><span class="live-label"><i></i>LIVE</span></div><div class="risk-chart" id="riskChart"><div class="chart-empty">Waiting for prediction data...</div></div><div class="chart-labels"><span>Earlier</span><span>Most recent</span></div></article>
+            </div>
+            <article class="panel insight-panel transfer-trend-panel"><div class="panel-header"><div><h3>Upload and download activity</h3><p>Recent transfer rate, sampled every 5 seconds</p></div><div class="trend-legend"><span><i class="trend-sent"></i>Sent</span><span><i class="trend-received"></i>Received</span></div></div><div class="risk-chart" id="transferTrendChart"><div class="chart-empty">Collecting traffic samples…</div></div><div class="chart-labels"><span>Earlier</span><span>Most recent</span></div></article>
+        </section>
+
+        <section class="page-view" id="view-model-quality" data-view="model-quality" aria-labelledby="modelQualityHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">04</span><div><h2 id="modelQualityHeading">Model quality</h2><p>Performance measured against labeled, held-out test traffic</p></div></div><button class="secondary-button" id="refreshModelQuality" type="button">↻ Refresh report</button></div>
+            <div class="quality-scope"><span>i</span><p>These are offline test results, not accuracy measured from live traffic. Live traffic does not have confirmed labels.</p></div>
+            <div id="modelQualityState" class="panel quality-state">Loading the saved evaluation report…</div>
+            <div id="modelQualityContent" hidden>
+                <div class="quality-grid">
+                    <article class="quality-card"><small>Recall</small><strong id="qualityRecall">--</strong><span>Share of test attacks detected</span></article>
+                    <article class="quality-card"><small>False alarm rate</small><strong id="qualityFalseAlarm">--</strong><span>Normal test traffic flagged as attack</span></article>
+                    <article class="quality-card"><small>Missed attack rate</small><strong id="qualityMissed">--</strong><span>Test attacks predicted as normal</span></article>
+                    <article class="quality-card"><small>Held-out test samples</small><strong id="qualitySamples">--</strong><span>Separate labeled examples</span></article>
+                </div>
+                <div class="quality-grid quality-secondary">
+                    <article class="panel quality-metric"><small>Overall accuracy</small><strong id="qualityAccuracy">--</strong></article>
+                    <article class="panel quality-metric"><small>Precision</small><strong id="qualityPrecision">--</strong></article>
+                    <article class="panel quality-metric"><small>F1 score</small><strong id="qualityF1">--</strong></article>
+                    <article class="panel quality-metric"><small>Evaluation date</small><strong id="qualityDate">--</strong></article>
+                </div>
+                <div class="analytics-grid quality-tables">
+                    <article class="panel system-panel"><div class="panel-header"><div><h3>Detection results</h3><p>Counts from the held-out test set</p></div></div><div class="system-info" id="qualityConfusion"></div></article>
+                    <article class="panel system-panel"><div class="panel-header"><div><h3>Results by attack type</h3><p>Test examples detected for each labeled attack family</p></div></div><div class="family-results" id="qualityFamilies"></div></article>
+                    <article class="panel system-panel threshold-panel"><div class="panel-header"><div><h3>Block threshold trade-off</h3><p>Offline estimates only; these do not change firewall settings</p></div></div><div class="threshold-results" id="qualityThresholds"></div></article>
                 </div>
             </div>
+        </section>
 
-            <nav class="nav">
-
-                <a class="nav-item active" href="#">
-                    <span>⌂</span>
-                    Dashboard
-                </a>
-
-                <a class="nav-item" href="#activity">
-                    <span>〽</span>
-                    Live Traffic
-                </a>
-
-                <a class="nav-item" href="#analytics">
-                    <span>▥</span>
-                    Analytics
-                </a>
-
-                <a class="nav-item" href="#alerts">
-                    <span>♟</span>
-                    Alerts
-                    <span class="alert-count" id="navAlertCount">0</span>
-                </a>
-
-                <a class="nav-item" href="#firewall">
-                    <span>◈</span>
-                    Firewall
-                </a>
-
-                <a class="nav-item" href="#activity">
-                    <span>▤</span>
-                    Logs
-                </a>
-
-            </nav>
-
-            <div class="sidebar-bottom">
-
-                <div class="protection-icon">◉</div>
-
-                <p>
-                    Protecting<br>
-                    Networks with AI
-                </p>
-
-                <div class="accent-line"></div>
-
+        <section class="page-view" id="view-activity" data-view="activity" aria-labelledby="activityHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">05</span><div><h2 id="activityHeading">Live traffic</h2><p>Search and review recent connections detected by packet capture</p></div></div><span class="record-count" id="recordCount">0 active flows</span></div>
+            <div class="traffic-total-grid">
+                <article class="traffic-total sent-total"><span class="total-icon">↑</span><div><small>Data sent (upload)</small><strong id="sentTotal">--</strong><span>From connection source</span></div></article>
+                <article class="traffic-total received-total"><span class="total-icon">↓</span><div><small>Data received (download)</small><strong id="receivedTotal">--</strong><span>From connection destination</span></div></article>
+                <article class="traffic-total rate-total"><span class="total-icon">⌁</span><div><small>Current transfer rate</small><strong id="transferRate">Calculating…</strong><span>Recent captured traffic</span></div></article>
             </div>
-
-        </aside>
-
-
-        <!-- MAIN -->
-        <main class="main">
-
-            <!-- TOP HEADER -->
-            <header class="topbar">
-
-                <div>
-                    <h1>Real-Time Network Security Monitoring</h1>
-
-                    <p>
-                        AI-powered detection
-                        <span>•</span>
-                        Adaptive protection
-                        <span>•</span>
-                        Safer networks
-                    </p>
-                </div>
-
-                <div class="top-actions">
-
-                    <div class="system-status">
-
-                        <span class="live-dot"></span>
-
-                        <div>
-                            <small>System Status</small>
-
-                            <strong id="systemStatus">
-                                CONNECTING
-                            </strong>
-                        </div>
-
-                    </div>
-
-                    <div class="refresh-status">
-
-                        <span>↻</span>
-
-                        <div>
-                            <small>Auto Refresh</small>
-                            <strong>5 sec</strong>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </header>
-
-
-            <!-- KPI CARDS -->
-            <section class="kpi-grid">
-
-                <div class="kpi-card blue">
-
-                    <div class="kpi-top">
-                        <span>Total Predictions</span>
-                        <div class="kpi-icon">◈</div>
-                    </div>
-
-                    <strong id="totalPredictions">--</strong>
-
-                    <div class="mini-line blue-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card green">
-
-                    <div class="kpi-top">
-                        <span>Normal Traffic</span>
-                        <div class="kpi-icon">✓</div>
-                    </div>
-
-                    <strong id="normalPredictions">--</strong>
-
-                    <div class="mini-line green-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card red">
-
-                    <div class="kpi-top">
-                        <span>Attack Predictions</span>
-                        <div class="kpi-icon">!</div>
-                    </div>
-
-                    <strong id="attackPredictions">--</strong>
-
-                    <div class="mini-line red-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card purple">
-
-                    <div class="kpi-top">
-                        <span>Average Attack Risk</span>
-                        <div class="kpi-icon">◔</div>
-                    </div>
-
-                    <strong id="averageRisk">--</strong>
-
-                    <div class="mini-line purple-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card green">
-
-                    <div class="kpi-top">
-                        <span>Allowed</span>
-                        <div class="kpi-icon">✓</div>
-                    </div>
-
-                    <strong id="allowedCount">--</strong>
-
-                    <div class="mini-line green-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card yellow">
-
-                    <div class="kpi-top">
-                        <span>Monitored</span>
-                        <div class="kpi-icon">◉</div>
-                    </div>
-
-                    <strong id="monitoredCount">--</strong>
-
-                    <div class="mini-line yellow-line"></div>
-
-                </div>
-
-
-                <div class="kpi-card red">
-
-                    <div class="kpi-top">
-                        <span>Blocked</span>
-                        <div class="kpi-icon">⊘</div>
-                    </div>
-
-                    <strong id="blockedCount">--</strong>
-
-                    <div class="mini-line red-line"></div>
-
-                </div>
-
-            </section>
-
-
-            <!-- ANALYTICS ROW -->
-            <section class="analytics-grid" id="analytics">
-
-                <!-- TRAFFIC CLASSIFICATION -->
-                <div class="panel">
-
-                    <div class="panel-header">
-
-                        <div>
-                            <h2>Traffic Classification</h2>
-                            <p>Current prediction distribution</p>
-                        </div>
-
-                    </div>
-
-                    <div class="donut-layout">
-
-                        <div class="donut" id="trafficDonut">
-
-                            <div class="donut-center">
-                                <strong id="donutTotal">0</strong>
-                                <span>Total</span>
-                            </div>
-
-                        </div>
-
-                        <div class="legend">
-
-                            <div class="legend-item">
-
-                                <span class="legend-dot normal-dot"></span>
-
-                                <div>
-                                    <strong>Normal</strong>
-                                    <span id="normalPercent">0%</span>
-                                </div>
-
-                            </div>
-
-
-                            <div class="legend-item">
-
-                                <span class="legend-dot attack-dot"></span>
-
-                                <div>
-                                    <strong>Attack</strong>
-                                    <span id="attackPercent">0%</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- RISK PANEL -->
-                <div class="panel">
-
-                    <div class="panel-header">
-
-                        <div>
-                            <h2>Attack Risk</h2>
-                            <p>Recent prediction activity</p>
-                        </div>
-
-                        <span class="live-label">
-                            <span></span>
-                            LIVE
-                        </span>
-
-                    </div>
-
-                    <div class="risk-chart" id="riskChart">
-
-                        <div class="chart-empty">
-                            Waiting for prediction data...
-                        </div>
-
-                    </div>
-
-                    <div class="chart-labels">
-                        <span>Recent</span>
-                        <span>Latest</span>
-                    </div>
-
-                </div>
-
-
-                <!-- FIREWALL -->
-                <div class="panel" id="firewall">
-
-                    <div class="panel-header">
-
-                        <div>
-                            <h2>Firewall Decisions</h2>
-                            <p>Current enforcement distribution</p>
-                        </div>
-
-                    </div>
-
-                    <div class="donut-layout">
-
-                        <div class="donut firewall-donut" id="firewallDonut">
-
-                            <div class="donut-center">
-                                <strong id="firewallTotal">0</strong>
-                                <span>Total</span>
-                            </div>
-
-                        </div>
-
-                        <div class="legend">
-
-                            <div class="legend-item">
-
-                                <span class="legend-dot allowed-dot"></span>
-
-                                <div>
-                                    <strong>Allowed</strong>
-                                    <span id="allowedPercent">0%</span>
-                                </div>
-
-                            </div>
-
-
-                            <div class="legend-item">
-
-                                <span class="legend-dot monitored-dot"></span>
-
-                                <div>
-                                    <strong>Monitored</strong>
-                                    <span id="monitoredPercent">0%</span>
-                                </div>
-
-                            </div>
-
-
-                            <div class="legend-item">
-
-                                <span class="legend-dot blocked-dot"></span>
-
-                                <div>
-                                    <strong>Blocked</strong>
-                                    <span id="blockedPercent">0%</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- LOWER SECTION -->
-            <section class="lower-grid">
-
-                <!-- BEHAVIORAL NETWORK ANALYSIS -->
-                <div class="panel activity-panel" id="activity">
-
-                    <div class="panel-header">
-
-                        <div>
-                            <h2>Behavioral Network Analysis</h2>
-                            <p>
-                                Aggregated network flows and traffic behavior
-                            </p>
-                        </div>
-
-                        <span class="record-count" id="recordCount">
-                            0 active flows
-                        </span>
-
-                    </div>
-
-
-                    <div class="table-container">
-
-                        <table>
-
-                            <thead>
-
-                                <tr>
-                                    <th>Source IP</th>
-                                    <th>Destination IP</th>
-                                    <th>Protocol</th>
-                                    <th>Packets</th>
-
-                                    <!-- CHANGED FROM BYTES TO TRANSFER -->
-                                    <th>Transfer</th>
-
-                                    <th>Duration</th>
-                                    <th>Risk</th>
-                                    <th>Prediction</th>
-                                    <th>Action</th>
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody id="predictionTable">
-
-                                <tr>
-                                    <td colspan="9" class="empty">
-                                        Waiting for network flows...
-                                    </td>
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-
-                <!-- RIGHT COLUMN -->
-                <div class="right-column">
-
-                    <!-- ALERTS -->
-                    <div class="panel alerts-panel" id="alerts">
-
-                        <div class="panel-header">
-
-                            <div>
-                                <h2>Recent Alerts</h2>
-                                <p>Detected threats</p>
-                            </div>
-
-                            <span class="alert-badge" id="alertBadge">
-                                0
-                            </span>
-
-                        </div>
-
-                        <div id="recentAlerts">
-
-                            <div class="empty-alert">
-                                No attack alerts detected.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SYSTEM INFO -->
-                    <div class="panel system-panel">
-
-                        <div class="panel-header">
-
-                            <div>
-                                <h2>System Information</h2>
-                                <p>SentinelAI configuration</p>
-                            </div>
-
-                        </div>
-
-
-                        <div class="system-info">
-
-                            <div>
-                                <span>⚙</span>
-                                <label>Model</label>
-                                <strong>Random Forest</strong>
-                            </div>
-
-
-                            <div>
-                                <span>◈</span>
-                                <label>Features</label>
-                                <strong>14 Network Features</strong>
-                            </div>
-
-
-                            <div>
-                                <span>◉</span>
-                                <label>Capture</label>
-                                <strong id="captureStatus">
-                                    Monitoring
-                                </strong>
-                            </div>
-
-
-                            <div>
-                                <span>●</span>
-                                <label>API</label>
-                                <strong id="apiStatus">
-                                    Connected
-                                </strong>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- FOOTER -->
-            <footer>
-
-                <span>SentinelAI</span>
-
-                <span>
-                    ML-Based Real-Time Network Threat Detection
-                    & Adaptive Firewall
-                </span>
-
-            </footer>
-
-        </main>
-
-    </div>
-
-
-    <script src="script.js"></script>
-
+            <article class="panel table-panel">
+                <div class="table-tools"><label class="search-box"><span>⌕</span><input id="flowSearch" type="search" placeholder="Search source, destination, or type" aria-label="Search live connections"></label><label class="filter-select"><span>Traffic check</span><select id="flowFilter"><option value="all">All connections</option><option value="ATTACK">Possible threats</option><option value="NORMAL">Normal</option><option value="ANALYZING">Waiting for result</option></select></label></div>
+                <div class="table-container"><table><thead><tr><th>Source</th><th>Destination</th><th>Type</th><th>Data transfer</th><th>Packets</th><th>Duration</th><th>Traffic check</th><th>Firewall action</th></tr></thead><tbody id="predictionTable"><tr><td colspan="8" class="empty">Waiting for network connections...</td></tr></tbody></table></div>
+                <p class="table-note">Upload/download direction and captured byte size are shown for each connection. Packet capture reports network traffic; it cannot identify a file name or the file’s location on a device.</p>
+            </article>
+        </section>
+
+        <section class="page-view" id="view-alerts" data-view="alerts" aria-labelledby="alertsHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">06</span><div><h2 id="alertsHeading">Recent alerts</h2><p>Possible threats and their firewall enforcement results</p></div></div><span class="alert-badge" id="alertBadge">0</span></div>
+            <article class="panel alerts-panel"><div class="alerts-intro"><span class="alert-symbol">!</span><p>Each alert keeps the model result and firewall outcome separate. A threat prediction does not by itself confirm that traffic was blocked.</p></div><div class="history-tools"><label class="search-box"><span>⌕</span><input id="alertSearch" type="search" placeholder="Search time, address, or result" aria-label="Search alert history"></label><label class="filter-select"><span>Show</span><select id="alertFilter"><option value="all">All threat alerts</option><option value="blocked">Block placed</option><option value="failed">Block failed</option><option value="unknown">Block unconfirmed</option><option value="monitor">Monitored</option></select></label><button class="secondary-button" id="exportAlerts" type="button">↓ Export CSV</button></div><p class="history-count" id="alertHistoryCount">0 alerts</p><p class="feedback-message" id="feedbackMessage" role="status" aria-live="polite"></p><div id="recentAlerts"><div class="empty-alert">No possible threats detected.</div></div></article>
+        </section>
+
+        <section class="page-view" id="view-adaptation" data-view="adaptation" aria-labelledby="adaptationHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">07</span><div><h2 id="adaptationHeading">Self-healing</h2><p>Set when recovery can happen and review block activity</p></div></div><span class="quiet-note">Current session</span></div>
+            <article class="panel recovery-settings-panel"><div><h3>Quiet observation time</h3><p>Keep a successful block in place until capture stays healthy and the detector sees no new suspicious activity for this long.</p><small id="recoverySettingsMessage" role="status">Loading saved time…</small></div><form id="recoverySettingsForm"><label for="recoveryDuration">Time before recovery</label><div><input id="recoveryDuration" name="duration_seconds" type="number" min="10" max="3600" step="1" required><span>seconds</span><button class="secondary-button" type="submit">Save time</button></div></form><small class="recovery-settings-note">Choose 10–3600 seconds. Saved time applies to new blocks. If capture monitoring stops, SentinelAI keeps the block in place.</small></article>
+            <article class="panel recovery-live-panel"><div class="panel-header"><div><h3>Current observation</h3><p>Live status of blocks waiting for a quiet period</p></div><span class="recovery-live-indicator">LIVE</span></div><div id="recoveryLiveStatus"><p class="empty-alert">No blocks are currently under recovery observation.</p></div></article>
+            <div class="history-controls"><div class="help-note"><span>i</span><p>A block stays in place until the quiet observation period passes with capture healthy. Any newly detected suspicious activity restarts that period.</p></div></div>
+            <article class="panel history-panel"><div class="panel-header"><div><h3>Recent recovery activity</h3><p>Showing the 10 most recent recovery events</p></div></div><div id="adaptationHistory"><div class="empty-alert">No recovery events recorded yet.</div></div></article>
+        </section>
+
+        <section class="page-view" id="view-protection" data-view="protection" aria-labelledby="protectionHeading" hidden>
+            <div class="view-heading"><div><span class="section-index">08</span><div><h2 id="protectionHeading">Protection status</h2><p>Current capture health and the model/firewall settings exposed by this project</p></div></div></div>
+            <article class="health-banner health-ok" id="protectionHealth"><span class="health-symbol" id="healthSymbol">✓</span><div><strong id="healthTitle">Checking protection health…</strong><p id="healthMessage">Reading API, packet capture, and firewall status.</p></div></article>
+            <div class="protection-status-grid"><article class="panel status-detail api-health"><span class="status-light"></span><div><small>Dashboard API</small><strong id="apiStatusDetail">Connecting</strong><p>Provides session statistics and traffic records.</p></div></article><article class="panel status-detail capture-health"><span class="status-light"></span><div><small>Packet capture</small><strong id="captureStatusDetail">Checking</strong><p>Collects network connections for analysis.</p></div></article></div>
+            <article class="panel system-panel"><div class="panel-header"><div><h3>Detection and firewall configuration</h3><p>Values reported by the running SentinelAI service</p></div></div><div class="system-info"><div><span>◈</span><label>Detection model</label><strong>Random Forest</strong></div><div><span>⌁</span><label>Traffic details checked</label><strong>14 features</strong></div><div><span>⛨</span><label>Block threshold</label><strong id="blockThreshold">70%</strong></div></div></article>
+            <article class="panel notification-panel"><div><h3>Desktop notifications</h3><p>Choose whether this browser alerts you when a new possible threat appears.</p><small id="notificationStatus">Notifications are off.</small></div><button class="secondary-button" id="notificationToggle" type="button">Enable desktop notifications</button></article>
+        </section>
+
+        <footer><span>SentinelAI <i>•</i> Network security monitoring</span><span>Live data refreshes every 5 seconds</span></footer>
+    </main>
+</div>
+<script src="/dashboard-assets/script.js?v=20261031-explanation-details"></script>
 </body>
-
 </html>

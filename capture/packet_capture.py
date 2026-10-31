@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import threading
 
 from scapy.all import sniff
 
@@ -29,6 +30,7 @@ from ai.realtime_detector import analyze_packet
 from ai.features.flow_aggregator import (
     save_active_flows
 )
+from ai.logs.session_state import start_new_session, update_capture_status
 
 
 # ============================================================
@@ -60,6 +62,15 @@ latest_probability = 0.0
 latest_action = "WAITING"
 
 last_display_time = time.time()
+capture_heartbeat_stop = threading.Event()
+
+
+def capture_heartbeat_loop():
+    while not capture_heartbeat_stop.wait(5):
+        try:
+            update_capture_status("RUNNING")
+        except OSError as error:
+            print(f"[WARNING] Could not update capture health: {error}")
 
 
 # ============================================================
@@ -409,6 +420,20 @@ print()
 
 try:
 
+    # Keep prior CSV history for reference, but start a fresh dashboard
+    # session and replace any stale active-flow snapshot.
+    session_started_at = start_new_session()
+    update_capture_status("RUNNING")
+    save_current_flows()
+    print(f"Dashboard session started: {session_started_at}")
+
+    heartbeat_thread = threading.Thread(
+        target=capture_heartbeat_loop,
+        name="SentinelAI-Capture-Heartbeat",
+        daemon=True
+    )
+    heartbeat_thread.start()
+
     sniff(
         prn=packet_callback,
         store=False
@@ -435,6 +460,15 @@ except KeyboardInterrupt:
 
 
 finally:
+
+    capture_heartbeat_stop.set()
+    heartbeat_thread = locals().get("heartbeat_thread")
+    if heartbeat_thread is not None:
+        heartbeat_thread.join(timeout=2)
+    try:
+        update_capture_status("STOPPED")
+    except OSError as error:
+        print(f"[WARNING] Could not mark capture stopped: {error}")
 
     # --------------------------------------------------------
     # Final flow save
